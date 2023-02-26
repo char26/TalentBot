@@ -20,9 +20,7 @@ available_specs = [
     'arms-warrior', 'fury-warrior', 'protection-warrior'
 ]
 
-# raid_mplus = 'raid'
-# spec_class = 'fire-mage'
-# slot = 'waists'
+
 
 def best_gear(raid_mplus, spec_class, slot):
     wowhead_links = []
