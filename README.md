@@ -54,10 +54,10 @@ talents
 
 ### Save talents
 
-$$save build-name build-string
+$$save class build-name build-string
 
 Example saving a build for Fire Mage in Raid:
-$$save Fire-Raid B8DAAAAAAAAAAAAAAAAAAAAAAkkAhWiESSBk0SIiISCAAAAAAAAAOABSEKJJSSkkkkUAAAA
+$$save Mage Fire-Raid B8DAAAAAAAAAAAAAAAAAAAAAAkkAhWiESSBk0SIiISCAAAAAAAAAOABSEKJJSSkkkkUAAAA
 
 Here are the arguments for each part of the command:
 save
@@ -66,19 +66,23 @@ save
 build-name
 - What you would like to name the build. No two builds can have the same name.
 
+class
+- Saves talents under that class' builds.
+- Example: Mage, Priest, Warrior, DeathKnight
+
 build-string
 - The talent calculator string from wowhead.
 
 ### View talent builds
 
-Use '$$my-builds' to view previously saved builds.
+Use '$$my-builds class' to view previously saved builds.
 
 ### Delete talent build
 
-$$del build-name
+$$del class build-name
 
 Example:
-$$del Fire-Raid
+$$del Mage Fire-Raid
 
 ### Help
 
