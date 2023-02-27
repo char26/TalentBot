@@ -64,7 +64,7 @@ async def on_message(message):
         await message.channel.send(your_builds)
 
     elif message.content == "$$help":
-        await message.channel.send("format as: $$content spec-class slot\n\nfor example:\n$$raid havoc-demon-hunter waists")
+        await message.channel.send("https://github.com/char26/TalentBot")
 
     elif "$$save" in message.content:
         command = message.content.split("$$save")[1].split(" ")
