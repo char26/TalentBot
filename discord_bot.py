@@ -2,8 +2,7 @@ import os
 import discord
 from dotenv import load_dotenv
 import json
-from prettytable import PrettyTable
-from wowhead_bis import best_gear, best_talents, available_slots
+from wowhead_bis import best_gear, best_talents, available_slots, available_bosses
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -29,8 +28,14 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    username = message.author.name + '#' + message.author.discriminator
     global all_builds
+    global is_boss
+    username = message.author.name + '#' + message.author.discriminator
+
+    for boss in available_bosses:
+        if (message.content.split("$$")[1].split(" ")[0]) in boss:
+            is_boss = True
+            break
 
     if message.author == client.user:
         return
@@ -78,8 +83,7 @@ async def on_message(message):
 
         await message.channel.send("Saved build. Type $$my-builds to see all of your saved builds.")
 
-# Keep as last
-    elif message.content.startswith('$$'):
+    elif ('$$raid' in message.content) or ('$$mplus' in message.content) or (is_boss == True):
         command = message.content.split("$$")[1].split(" ")
         content = command[0]
         spec_class = command[1]
@@ -87,9 +91,35 @@ async def on_message(message):
 
         if slot == 'talents':
             info = best_talents(content, spec_class)
-            await message.channel.send(info)
+            msg = await message.channel.send(info + "\n\n React with ✅ to save this to your builds.")
+            await msg.add_reaction("✅")
         else:
             info = best_gear(content, spec_class, slot)
             await message.channel.send(f"```{info}```")
+
+@client.event
+async def on_reaction_add(reaction, user):
+    global all_builds
+    username = user.name + '#' + user.discriminator
+
+    emoji = reaction.emoji
+
+    if user.bot:
+        return
+    
+    if "React with ✅ to save this to your builds." in reaction.message.content:
+        if emoji == "✅":
+            build_string = reaction.message.content.split("\n\n")[1]
+            build_name = reaction.message.content.split("-")[1].split(" ")[0] + "-" + reaction.message.content.split("-")[3]
+            
+            try:
+                all_builds[username]["build_name"].append(build_name)
+                all_builds[username]["build_string"].append(build_string)
+
+            except KeyError:
+                all_builds.update({username: {"build_name": [build_name], "build_string": [build_string]}})
+    
+            with open("builds.json", "w") as f:
+                json.dump(all_builds, f)
 
 client.run(TOKEN)

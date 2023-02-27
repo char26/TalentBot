@@ -20,6 +20,17 @@ available_specs = [
     'arms-warrior', 'fury-warrior', 'protection-warrior'
 ]
 
+available_bosses = [
+    'eranog',
+    'terros',
+    'the-primal-council',
+    'sennarth-the-cold-breath',
+    'dathea-ascended',
+    'kurog-grimtotem',
+    'broodkeeper-diurna',
+    'raszageth-the-storm-eater'
+]
+
 
 
 def best_gear(raid_mplus, spec_class, slot):
@@ -82,6 +93,11 @@ def best_talents(raid_mplus, spec_class):
         subcreation_link = f"https://{raid_mplus}.subcreation.net/{spec_class}.html#top"
     elif raid_mplus == 'raid':
         subcreation_link = f"https://{raid_mplus}.subcreation.net/vault-{spec_class}.html#top"
+    else:
+        for boss in available_bosses:
+            if raid_mplus in boss:
+                subcreation_link = f"https://raid.subcreation.net/vault-{spec_class}-{boss}.html#top"
+                break
     page = requests.get(subcreation_link)
 
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -92,8 +108,9 @@ def best_talents(raid_mplus, spec_class):
     wowhead_links.append(re.findall('"https://www.wowhead.com/talent-calc/blizzard/.*"', str(talent_builds[0])))
     talent_string = str(wowhead_links[0]).split('"https://www.wowhead.com/talent-calc/blizzard/')[1].split('" target="_blank"')[0]
 
+    spec_class = spec_class.split("-")
     
     talent_link = "https://www.wowhead.com/talent-calc/blizzard/" + talent_string
-    best_build = f"Top talent build on subcreation for {spec_class} in {raid_mplus}:\n\n{talent_string}\n\n{talent_link}"
+    best_build = f"Top talent build on subcreation for -{spec_class[0].capitalize()} {spec_class[1].capitalize()}- in -{raid_mplus.capitalize()}-:\n\n{talent_string}\n\n{talent_link}"
     
     return best_build
