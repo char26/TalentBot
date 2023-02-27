@@ -7,6 +7,8 @@ The bot has 3 main functions:
 - Retrieve best talent builds for any raid boss encounter, or mythic+ in general.
 - Save talent builds, both suggested by the retrieval tool, or by inputting the name and string manually.
 
+It scrapes data from a World of Warcraft website called 'subcreation' raid.subcreation.net, which automatically updates the most common gear and talents for each class in the game. After scraping the gear or talent build, the bot scrapes the name and other information from Wowhead.
+
 ## Instructions for using the bot
 All commands start with '$$'.
 
