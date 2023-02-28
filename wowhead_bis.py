@@ -41,7 +41,10 @@ def best_gear(raid_mplus, spec_class, slot):
     # Getting the best-in-slot items from mplus-subcreation.net
     ########################################### For All Slots
     if slot == 'all':
-        pass # Maybe one day
+        if raid_mplus == 'mplus':
+            subcreation_link = f"https://{raid_mplus}.subcreation.net/{spec_class}.html#{slot}"
+        elif raid_mplus =='raid':
+            subcreation_link = f"https://{raid_mplus}.subcreation.net/vault-{spec_class}.html#{slot}"
 
     ########################################### For Specific Slots
     elif (spec_class in available_specs) and (slot in available_slots):
