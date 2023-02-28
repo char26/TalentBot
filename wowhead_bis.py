@@ -31,15 +31,29 @@ available_bosses = [
     'raszageth-the-storm-eater'
 ]
 
-def scrape_subcreation(subcreation_link, slot):
+def find_gear(subcreation_link):
+    all_links = []
+    all_slots = []
+    gear_names = []
+    page = requests.get(subcreation_link)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    for current_slot in available_slots:
+        clean_wh_links = []
+        clean_wh_links = scrape_subcreation(soup, current_slot)
+        for x in clean_wh_links:
+            wowhead_html = requests.get(x)
+            wowhead_soup = BeautifulSoup(wowhead_html.content, 'html.parser')
+
+            gear_names.append(wowhead_soup.find("h1", class_="heading-size-1").text)
+            all_links.append(x)
+            all_slots.append(current_slot)
+    return [all_links, all_slots, gear_names]
+
+def scrape_subcreation(soup, slot):
     clean_wh_links = []
     wowhead_links = []
 
-    page = requests.get(subcreation_link)
-    soup = BeautifulSoup(page.content, 'html.parser')
     results = soup.find(id = f"table-spec-{slot}")
-
-    print(slot)
 
     best_gear = results.find_all("a", href=True)
 
@@ -69,18 +83,13 @@ def best_gear(raid_mplus, spec_class, slot):
         all_links = []
         all_slots = []
         if raid_mplus == 'mplus':
-            for current_slot in available_slots:
-                clean_wh_links = []
-                subcreation_link = f"https://{raid_mplus}.subcreation.net/{spec_class}.html#{slot}"
-                clean_wh_links = scrape_subcreation(subcreation_link, current_slot)
-                for x in clean_wh_links:
-                    wowhead_html = requests.get(x)
-                    wowhead_soup = BeautifulSoup(wowhead_html.content, 'html.parser')
-
-                    gear_names.append(wowhead_soup.find("h1", class_="heading-size-1").text)
-                    all_links.append(x)
-                    all_slots.append(current_slot)
-
+            subcreation_link = f"https://{raid_mplus}.subcreation.net/{spec_class}.html#top"
+            
+            func_list = find_gear(subcreation_link)
+            all_links = func_list[0]
+            all_slots = func_list[1]
+            gear_names = func_list[2]
+            
             x = PrettyTable()
             x.field_names = ["Item", "Slot", "Wowhead Link"]
 
@@ -91,6 +100,19 @@ def best_gear(raid_mplus, spec_class, slot):
             
         elif raid_mplus =='raid':
             subcreation_link = f"https://{raid_mplus}.subcreation.net/vault-{spec_class}.html#{slot}"
+
+            func_list = find_gear(subcreation_link)
+            all_links = func_list[0]
+            all_slots = func_list[1]
+            gear_names = func_list[2]
+            
+            x = PrettyTable()
+            x.field_names = ["Item", "Slot", "Wowhead Link"]
+
+            for i in range(len(gear_names)):
+                x.add_row([gear_names[i], all_slots[i].capitalize(), all_links[i]])
+
+            return x
 
     ########################################### For Specific Slots
     elif (spec_class in available_specs) and (slot in available_slots):
