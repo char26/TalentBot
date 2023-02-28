@@ -7,6 +7,8 @@ The bot has 3 main functions:
 - Retrieve best talent builds for any raid boss encounter, or mythic+ in general.
 - Save talent builds, both suggested by the retrieval tool, or by inputting the name and string manually.
 
+It scrapes data from a World of Warcraft website called 'subcreation' raid.subcreation.net, which automatically updates the most common gear and talents for each class in the game. After scraping the gear or talent build, the bot scrapes the name and other information from Wowhead.
+
 ## Instructions for using the bot
 All commands start with '$$'.
 
@@ -54,14 +56,18 @@ talents
 
 ### Save talents
 
-$$save build-name build-string
+$$save class build-name build-string
 
 Example saving a build for Fire Mage in Raid:
-$$save Fire-Raid B8DAAAAAAAAAAAAAAAAAAAAAAkkAhWiESSBk0SIiISCAAAAAAAAAOABSEKJJSSkkkkUAAAA
+$$save Mage Fire-Raid B8DAAAAAAAAAAAAAAAAAAAAAAkkAhWiESSBk0SIiISCAAAAAAAAAOABSEKJJSSkkkkUAAAA
 
 Here are the arguments for each part of the command:
 save
 - Do not change, used to initialize the saved string.
+
+class
+- Saves talents under that class' builds.
+- Example: Mage, Priest, Warrior, DeathKnight
 
 build-name
 - What you would like to name the build. No two builds can have the same name.
@@ -71,14 +77,14 @@ build-string
 
 ### View talent builds
 
-Use '$$my-builds' to view previously saved builds.
+Use '$$my-builds class' to view previously saved builds.
 
 ### Delete talent build
 
-$$del build-name
+$$del class build-name
 
 Example:
-$$del Fire-Raid
+$$del Mage Fire-Raid
 
 ### Help
 
