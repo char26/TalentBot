@@ -47,15 +47,13 @@ async def on_message(message):
     if message.content == "$$slots":
         await message.channel.send(available_slots)
     
-    # example: $$del Wind-Raid
+    # example: $$del Monk Wind-Raid
     elif "$$del" in message.content:
         spec_build_to_delete = message.content.split("$$del ")[1]
-        class_ = spec_build_to_delete[0].capitalize()
-        build_to_delete = spec_build_to_delete[1]
-        index = all_builds[username][class_]["build_name"].index(build_to_delete)
+        class_ = spec_build_to_delete.split(" ")[0].capitalize()
+        build_to_delete = spec_build_to_delete.split(" ")[1]
 
-        all_builds[username][class_]["build_name"].pop(index)
-        all_builds[username][class_]["build_string"].pop(index)
+        all_builds[username].pop(class_)
 
         with open("builds.json", "w") as f:
             json.dump(all_builds, f)
@@ -63,12 +61,15 @@ async def on_message(message):
         await message.channel.send(f"Deleted {build_to_delete} from your builds.")
 
     elif '$$my-builds' in message.content:
-        class_ = message.content.split("$$my-builds ")[1].capitalize()
         your_builds = ""
-        for i in range(len(all_builds[username][class_]["build_name"])):
-            your_builds += all_builds[username][class_]["build_name"][i] + "\n" + all_builds[username][class_]["build_string"][i] + "\n" + f'https://www.wowhead.com/talent-calc/blizzard/{all_builds[username][class_]["build_string"][i]}' + "\n-------------------------------------------------------------------------------------------------------\n\n"
-
-        await message.channel.send(your_builds)
+        class_ = message.content.split("$$my-builds ")[1].capitalize()
+        try:
+            for i in range(len(all_builds[username][class_]["build_name"])):
+                your_builds += all_builds[username][class_]["build_name"][i] + "\n" + all_builds[username][class_]["build_string"][i] + "\n" + f'https://www.wowhead.com/talent-calc/blizzard/{all_builds[username][class_]["build_string"][i]}' + "\n-------------------------------------------------------------------------------------------------------\n\n"
+            await message.channel.send(your_builds)
+        except KeyError:
+            await message.channel.send(f"No builds for {class_}.")
+        
 
     elif message.content == "$$help":
         await message.channel.send("https://github.com/char26/TalentBot")
@@ -101,7 +102,7 @@ async def on_message(message):
 
         if slot == 'talents':
             info = best_talents(content, spec_class)
-            msg = await message.channel.send(info + "\n\n React with ✅ to save this to your builds.")
+            msg = await message.channel.send(info + "\n\n React with ✅ to save this to '$$my-builds'.")
             await msg.add_reaction("✅")
         else:
             info = best_gear(content, spec_class, slot)
@@ -117,25 +118,24 @@ async def on_reaction_add(reaction, user):
     if user.bot:
         return
     
-    if "React with ✅ to save this to your builds." in reaction.message.content:
+    if "React with ✅" in reaction.message.content:
         if emoji == "✅":
             build_string = reaction.message.content.split("\n\n")[1]
             build_name = reaction.message.content.split("-")[1].split(" ")[0] + "-" + reaction.message.content.split("-")[3]
             class_ = reaction.message.content.split("-")[1].split(" ")[1].capitalize()
 
-            if build_name in all_builds[username][class_]["build_name"]:
-                await reaction.message.channel.send(f"Build name already in use. $$del {build_name} then react again.")
-
-            else:
-                try:
+            try:
+                if build_name in all_builds[username][class_]["build_name"]:
+                    await reaction.message.channel.send(f"Build name already in use. $$del {build_name} then react again.")
+                else:
                     all_builds[username][class_]["build_name"].append(build_name)
                     all_builds[username][class_]["build_string"].append(build_string)
 
-                except KeyError:
-                    all_builds[username][class_] = {"build_name": [build_name], "build_string": [build_string]}
-        
-                with open("builds.json", "w") as f:
-                    json.dump(all_builds, f)
+            except KeyError:
+                all_builds[username][class_] = {"build_name": [build_name], "build_string": [build_string]}
+    
+            with open("builds.json", "w") as f:
+                json.dump(all_builds, f)
 
 @client.event
 async def on_reaction_remove(reaction, user):
@@ -147,7 +147,7 @@ async def on_reaction_remove(reaction, user):
     if user.bot:
         return
     
-    if "React with ✅ to save this to your builds." in reaction.message.content:
+    if "React with ✅ " in reaction.message.content:
         if emoji == "✅":
             build_name = reaction.message.content.split("-")[1].split(" ")[0] + "-" + reaction.message.content.split("-")[3]
             class_ = reaction.message.content.split("-")[1].split(" ")[1].capitalize()
