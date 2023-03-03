@@ -65,7 +65,7 @@ async def on_message(message):
         class_ = message.content.split("$$my-builds ")[1].capitalize()
         try:
             for i in range(len(all_builds[username][class_]["build_name"])):
-                your_builds += all_builds[username][class_]["build_name"][i] + "\n" + all_builds[username][class_]["build_string"][i] + "\n" + f'https://www.wowhead.com/talent-calc/blizzard/{all_builds[username][class_]["build_string"][i]}' + "\n-------------------------------------------------------------------------------------------------------\n\n"
+                your_builds += all_builds[username][class_]["build_name"][i] + "\n" + all_builds[username][class_]["build_string"][i] + "\n" + f'<https://www.wowhead.com/talent-calc/blizzard/{all_builds[username][class_]["build_string"][i]}>' + "\n-------------------------------------------------------------------------------------------------------\n\n"
             await message.channel.send(your_builds)
         except KeyError:
             await message.channel.send(f"No builds for {class_}.")

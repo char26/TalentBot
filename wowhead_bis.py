@@ -3,7 +3,34 @@ import requests
 import re
 import numpy as np
 from prettytable import PrettyTable
-from variables import available_bosses, available_slots, available_specs
+
+available_slots = ['weapons', 'trinkets', 'head', 'neck', 'shoulders', 'back', 'chests', 'wrists', 'hands', 'waists', 'legs', 'feet', 'rings']
+available_specs = [
+    'blood-death-knight', 'frost-death-knight', 'unholy-death-knight',
+    'havoc-demon-hunter', 'vengeance-demon-hunter',
+    'balance-druid', 'feral-druid', 'guardian-druid', 'restoration-druid',
+    'beast-mastery-hunter', 'marksmanship-hunter', 'survival-hunter',
+    'arcane-mage', 'fire-mage', 'frost-mage',
+    'brewmaster-monk', 'mistweaver-monk', 'windwalker-monk',
+    'holy-paladin', 'protection-paladin', 'retribution-paladin',
+    'discipline-priest', 'holy-priest', 'shadow-priest',
+    'assassination-rogue', 'outlaw-rogue', 'subtlety-rogue',
+    'elemental-shaman', 'enhancement-shaman', 'restoration-shaman',
+    'affliction-warlock', 'demonology-warlock', 'destruction-warlock',
+    'arms-warrior', 'fury-warrior', 'protection-warrior',
+    'devastation-evoker', 'preservation-evoker'
+]
+
+available_bosses = [
+    'eranog',
+    'terros',
+    'the-primal-council',
+    'sennarth-the-cold-breath',
+    'dathea-ascended',
+    'kurog-grimtotem',
+    'broodkeeper-diurna',
+    'raszageth-the-storm-eater'
+]
 
 def find_gear(subcreation_link):
     all_links = []
@@ -95,7 +122,9 @@ def best_gear(raid_mplus, spec_class, slot):
         elif raid_mplus =='raid':
             subcreation_link = f"https://{raid_mplus}.subcreation.net/vault-{spec_class}.html#{slot}"
 
-        clean_wh_links = scrape_subcreation(subcreation_link, slot)
+        page = requests.get(subcreation_link)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        clean_wh_links = scrape_subcreation(soup, slot)
 
         # Parsing Wowhead for item info
         for x in clean_wh_links:
@@ -138,6 +167,6 @@ def best_talents(raid_mplus, spec_class):
     spec_class = spec_class.split("-")
     
     talent_link = "https://www.wowhead.com/talent-calc/blizzard/" + talent_string
-    best_build = f"Top talent build on subcreation for -{spec_class[0].capitalize()} {spec_class[1].capitalize()}- in -{raid_mplus.capitalize()}-:\n\n{talent_string}\n\n{talent_link}"
+    best_build = f"Top talent build on subcreation for -{spec_class[0].capitalize()} {spec_class[1].capitalize()}- in -{raid_mplus.capitalize()}-:\n\n{talent_string}\n\n<{talent_link}>"
     
     return best_build

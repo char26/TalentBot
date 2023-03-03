@@ -65,12 +65,12 @@ Here are the arguments for each part of the command:
 save
 - Do not change, used to initialize the saved string.
 
-build-name
-- What you would like to name the build. No two builds can have the same name.
-
 class
 - Saves talents under that class' builds.
 - Example: Mage, Priest, Warrior, DeathKnight
+
+build-name
+- What you would like to name the build. No two builds can have the same name.
 
 build-string
 - The talent calculator string from wowhead.
